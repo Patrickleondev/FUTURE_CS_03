@@ -1,50 +1,43 @@
-# FUTURE_CS_03 — API Security Risk Analysis
+# FUTURE_CS_03 - API Security Risk Analysis
 
-![API Security](images/api_security_header.png) *(Note: Placeholder for user image)*
+## Project Overview
 
-## 🔍 About This Task
-This repository is the submission for **Task 3** of the **Future Interns Cyber Security Track (2026)**.
+This repository contains the deliverables for Task 3 of the Future Interns Cyber Security Track (2026).
+The primary objective was to manually assess an API for design flaws, demonstrate practical exploitation of authorization vulnerabilities defined in the OWASP API Security Top 10, and produce a high-level executive report outlining the business risks and mitigation strategies.
 
-**Task:** Analyze a vulnerable API to identify common API security risks (OWASP API Top 10), assess authorization controls, and explain risks in simple business language with clear remediation steps.
+## Target Environment
 
----
+- Target API: VAmPI (Vulnerable API made with Flask)
+- Deployment: Local, isolated Docker container (`erev0s/vampi`).
+- Assessment Focus: Broken Object Level Authorization (BOLA), Broken Function Level Authorization (BFLA), Mass Assignment, and Security Misconfigurations.
 
-## 🎯 Target API
-| Field | Details |
-|---|---|
-| **API** | VAmPI (Vulnerable API made with Flask) |
-| **Reason for selection** | Explicitly designed to simulate the **OWASP API Security Top 10** vulnerabilities found in modern enterprise SaaS applications. |
-| **Hosting** | Local Docker Environment (Isolated) |
+## Methodology & Evidence
 
----
+The assessment was conducted dynamically using Postman to intercept, modify, and replay API requests.
 
-## 🛠️ Tools Used
-| Tool | Purpose |
-|---|---|
-| Postman | Manual API interaction, endpoint inspection, and JWT token management |
-| Python 3 (Requests) | Development of a custom automated exploitation script |
-| Docker | Secure, isolated hosting of the vulnerable API |
-| Markdown | Professional security reporting |
+### 1. API Initialization & Authentication
 
----
+The environment database was successfully provisioned, followed by the registration and authentication of a standard user account to obtain a valid JSON Web Token (JWT).
+![Database Initialization](images/createdb.png)
+![Authentication & JWT Issuance](images/login.png)
 
-## 📁 Repository Structure
-```
-FUTURE_CS_03/
-├── API_Security_Risk_Analysis_Report.md  # ✅ Professional vulnerability report
-├── vampi_exploit.py                      # ✅ Custom Python script automating the BOLA attack
-├── Postman_Instructions.md               # ✅ Step-by-step Postman testing guide
-├── Task3_Strategy.md                     # Assessment strategy & deployment guide
-├── README.md                             # This file
-└── images/                               # Directory containing Postman screenshots
-```
+### 2. Broken Object Level Authorization (BOLA) - OWASP API1
 
----
+By manipulating the Uniform Resource Identifier (URI) while holding a standard user token, the API failed to enforce object-level access controls, successfully returning the private details of the administrative user.
+![BOLA Exploitation Proof](images/adminget.png)
 
-## 📄 Key Deliverables
-- [📊 **API Security Risk Analysis Report**](API_Security_Risk_Analysis_Report.md) — The comprehensive final report documenting BOLA (Broken Object Level Authorization), Excessive Data Exposure, and remediation strategies in business language.
-- [🐍 **vampi_exploit.py Script**](vampi_exploit.py) — A practical, custom Python script that automatically registers, authenticates, and exploits the API to demonstrate data theft.
+### 3. Excessive Data Exposure (BFLA) - OWASP API5
 
----
+The API exposed an unauthenticated administrative diagnostic route (`/_debug`) which leaked the entire user database, including hashed passwords and internal system configurations.
+![Debug Endpoint Exposure](images/debug_exposure.png)
 
-*Submitted by: Patrick Leon | Future Interns Cyber Security Program 2026*
+### 4. Information Disclosure / User Enumeration
+
+Without authentication, the `GET /users/v1` endpoint provided a complete directory of registered user accounts, exposing the API to targeted credential brute-forcing.
+![User Enumeration Proof](images/user_enum1.png)
+
+## Deliverables
+
+- The final, professional API Security Risk Analysis Report (`.pdf` or `.docx`) outlining the strategic roadmap for zero-trust authorization.
+- `vampi_exploit.py`: A custom-developed Python script automating the registration, login, and BOLA data extraction phases to demonstrate programmatic exploitation capabilities.
+- `images/`: The complete archive of API request and response evidence captured via Postman.
